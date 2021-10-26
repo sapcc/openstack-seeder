@@ -1,0 +1,15 @@
+domain: openstack.stable.sap.cc
+layout:
+- go.kubebuilder.io/v3
+projectName: openstack-seeder
+repo: github.com/sapcc/openstack-seeder
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: openstack.stable.sap.cc
+  kind: OpenstackSeed
+  path: github.com/sapcc/openstack-seeder/api/v2
+  version: v2
+version: "3"

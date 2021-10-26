@@ -1,0 +1,7 @@
+apiVersion: openstack.stable.sap.cc/v2
+kind: OpenstackSeed
+metadata:
+  name: openstackseed-sample
+spec:
+  # Add fields here
+  foo: bar

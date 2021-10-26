@@ -1,0 +1,20 @@
+# permissions for end users to view openstackseeds.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: openstackseed-viewer-role
+rules:
+- apiGroups:
+  - openstack.stable.sap.cc
+  resources:
+  - openstackseeds
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - openstack.stable.sap.cc
+  resources:
+  - openstackseeds/status
+  verbs:
+  - get

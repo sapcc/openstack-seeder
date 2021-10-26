@@ -1,0 +1,950 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.4.1
+  creationTimestamp: null
+  name: openstackseeds.openstack.stable.sap.cc
+spec:
+  group: openstack.stable.sap.cc
+  names:
+    kind: OpenstackSeed
+    listKind: OpenstackSeedList
+    plural: openstackseeds
+    singular: openstackseed
+  scope: Namespaced
+  versions:
+  - name: v2
+    schema:
+      openAPIV3Schema:
+        description: OpenstackSeed is the Schema for the openstackseeds API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: OpenstackSeedSpec defines the desired state of OpenstackSeed
+            properties:
+              domains:
+                description: list keystone domains with their configuration, users,
+                  groups, projects, etc
+                items:
+                  description: A keystone domain (see https://developer.openstack.org/api-ref/identity/v3/index.html#domains)
+                  properties:
+                    config:
+                      description: A keystone domain configuation (see https://developer.openstack.org/api-ref/identity/v3/index.html#domain-configuration)
+                      properties:
+                        identity:
+                          properties:
+                            driver:
+                              type: string
+                          required:
+                          - driver
+                          type: object
+                        ldap:
+                          properties:
+                            alias_dereferencing:
+                              type: string
+                            auth_pool_connection_lifetime:
+                              type: integer
+                            auth_pool_size:
+                              type: integer
+                            debug_level:
+                              type: integer
+                            group_allow_create:
+                              type: boolean
+                            group_allow_delete:
+                              type: boolean
+                            group_allow_update:
+                              type: boolean
+                            group_attribute_ignore:
+                              type: string
+                            group_description_attribute:
+                              type: string
+                            group_filter:
+                              type: string
+                            group_id_attribute:
+                              type: string
+                            group_member_attribute:
+                              type: string
+                            group_members_are_ids:
+                              type: boolean
+                            group_name_attribute:
+                              type: string
+                            group_objectclass:
+                              type: string
+                            group_tree_dn:
+                              type: string
+                            page_size:
+                              type: integer
+                            password:
+                              type: string
+                            pool_connection_lifetime:
+                              type: integer
+                            pool_connection_timeout:
+                              type: integer
+                            pool_retry_delay:
+                              type: integer
+                            pool_retry_max:
+                              type: integer
+                            pool_size:
+                              type: integer
+                            query_scope:
+                              type: string
+                            suffix:
+                              type: string
+                            tls_cacertdir:
+                              type: string
+                            tls_cacertfile:
+                              type: string
+                            tls_req_cert:
+                              type: string
+                            url:
+                              type: string
+                            use_auth_pool:
+                              type: boolean
+                            use_pool:
+                              type: boolean
+                            use_tls:
+                              type: boolean
+                            user:
+                              type: string
+                            user_allow_create:
+                              type: boolean
+                            user_allow_delete:
+                              type: boolean
+                            user_allow_update:
+                              type: boolean
+                            user_attribute_ignore:
+                              type: string
+                            user_description_attribute:
+                              type: string
+                            user_enabled_attribute:
+                              type: string
+                            user_enabled_default:
+                              type: string
+                            user_enabled_mask:
+                              type: integer
+                            user_filter:
+                              type: string
+                            user_id_attribute:
+                              type: string
+                            user_mail_attribute:
+                              type: string
+                            user_name_attribute:
+                              type: string
+                            user_objectclass:
+                              type: string
+                            user_pass_attribute:
+                              type: string
+                            user_tree_dn:
+                              type: string
+                          required:
+                          - password
+                          - url
+                          - user
+                          type: object
+                      type: object
+                    description:
+                      type: string
+                    enabled:
+                      type: boolean
+                    groups:
+                      items:
+                        description: A keystone group (see https://developer.openstack.org/api-ref/identity/v3/#groups)
+                        properties:
+                          description:
+                            type: string
+                          name:
+                            type: string
+                          role_assignments:
+                            items:
+                              description: "A keystone role assignment (see https://developer.openstack.org/api-ref/identity/v3/#roles).
+                                \n Role assignments can be assigned to users, groups,
+                                domain and projects. \n A role assignment always links
+                                3 entities: user or group to project or domain with
+                                a specified role. \n To support cross domain entity
+                                referals, the user-, group- or project-names support
+                                a name@domain notation."
+                              properties:
+                                domain:
+                                  type: string
+                                group:
+                                  type: string
+                                inherited:
+                                  type: boolean
+                                project:
+                                  type: string
+                                project_id:
+                                  type: string
+                                role:
+                                  type: string
+                                system:
+                                  type: string
+                                user:
+                                  type: string
+                              required:
+                              - role
+                              type: object
+                            type: array
+                          users:
+                            items:
+                              type: string
+                            type: array
+                        required:
+                        - name
+                        type: object
+                      type: array
+                    name:
+                      type: string
+                    projects:
+                      items:
+                        description: A keystone project (see https://developer.openstack.org/api-ref/identity/v3/index.html#projects)
+                        properties:
+                          address_scopes:
+                            items:
+                              description: A neutron address scope (see https://developer.openstack.org/api-ref/networking/v2/index.html  UNDOCUMENTED)
+                              properties:
+                                ip_version:
+                                  type: integer
+                                name:
+                                  type: string
+                                shared:
+                                  type: boolean
+                                subnet_pools:
+                                  items:
+                                    description: A neutron subnet pool (see https://developer.openstack.org/api-ref/networking/v2/index.html#subnet-pools)
+                                    properties:
+                                      address_scope_id:
+                                        type: string
+                                      default_prefixlen:
+                                        type: integer
+                                      default_quota:
+                                        type: integer
+                                      description:
+                                        type: string
+                                      is_default:
+                                        type: boolean
+                                      max_prefixlen:
+                                        type: integer
+                                      min_prefixlen:
+                                        type: integer
+                                      name:
+                                        type: string
+                                      prefixes:
+                                        items:
+                                          type: string
+                                        type: array
+                                      shared:
+                                        type: boolean
+                                    required:
+                                    - name
+                                    - prefixes
+                                    type: object
+                                  type: array
+                              required:
+                              - ip_version
+                              - name
+                              type: object
+                            type: array
+                          description:
+                            type: string
+                          dns_quota:
+                            description: DNSQuotaSpec defines a designate project
+                              quota (see https://developer.openstack.org/api-ref/dns/?expanded=#quotas)
+                            properties:
+                              api_export_size:
+                                type: integer
+                              recordset_records:
+                                type: integer
+                              zone_records:
+                                type: integer
+                              zone_recordsets:
+                                type: integer
+                              zones:
+                                type: integer
+                            type: object
+                          dns_tsigkeys:
+                            items:
+                              description: DNSTSIGKeySpec defines a designate tsig
+                                key (see https://developer.openstack.org/api-ref/dns/#tsigkey)
+                              properties:
+                                algorithm:
+                                  type: string
+                                name:
+                                  type: string
+                                resource_id:
+                                  type: string
+                                scope:
+                                  type: string
+                                secret:
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            type: array
+                          dns_zones:
+                            items:
+                              description: DNSZoneSpec defines a designate zone (see
+                                https://developer.openstack.org/api-ref/dns/?expanded=#zones)
+                              properties:
+                                description:
+                                  type: string
+                                email:
+                                  type: string
+                                name:
+                                  type: string
+                                recordsets:
+                                  items:
+                                    description: DNSRecordsetSpec defines a designate
+                                      recordset (see https://developer.openstack.org/api-ref/dns/?expanded=#recordsets)
+                                    properties:
+                                      description:
+                                        type: string
+                                      name:
+                                        type: string
+                                      records:
+                                        items:
+                                          type: string
+                                        type: array
+                                      ttl:
+                                        type: integer
+                                      type:
+                                        type: string
+                                    required:
+                                    - name
+                                    - type
+                                    type: object
+                                  type: array
+                                ttl:
+                                  type: integer
+                                type:
+                                  type: string
+                              required:
+                              - email
+                              - name
+                              - type
+                              type: object
+                            type: array
+                          ec2_creds:
+                            items:
+                              description: Ec2CredSpec defines an ec2 credential for
+                                a user (see https://developer.openstack.org/api-ref/identity/v3/index.html?expanded=#credentials)
+                              properties:
+                                access:
+                                  type: string
+                                key:
+                                  type: string
+                                user:
+                                  type: string
+                                user_domain:
+                                  type: string
+                              required:
+                              - access
+                              - key
+                              - user
+                              - user_domain
+                              type: object
+                            type: array
+                          enabled:
+                            type: boolean
+                          endpoints:
+                            items:
+                              description: A project endpoint filter (see https://developer.openstack.org/api-ref/identity/v3-ext/#os-ep-filter-api)
+                              properties:
+                                region:
+                                  type: string
+                                service:
+                                  type: string
+                              required:
+                              - region
+                              - service
+                              type: object
+                            type: array
+                          flavors:
+                            items:
+                              type: string
+                            type: array
+                          is_domain:
+                            type: boolean
+                          name:
+                            type: string
+                          network_quota:
+                            description: A neutron project quota (see https://developer.openstack.org/api-ref/networking/v2/index.html#quotas-extension-quotas)
+                            properties:
+                              floatingip:
+                                type: integer
+                              healthmonitor:
+                                type: integer
+                              l7policy:
+                                type: integer
+                              listener:
+                                type: integer
+                              loadbalancer:
+                                type: integer
+                              network:
+                                type: integer
+                              port:
+                                type: integer
+                              rbac_policy:
+                                type: integer
+                              router:
+                                type: integer
+                              security_group:
+                                type: integer
+                              security_group_rule:
+                                type: integer
+                              subnet:
+                                type: integer
+                              subnetpool:
+                                type: integer
+                            type: object
+                          networks:
+                            items:
+                              description: A neutron network (see https://developer.openstack.org/api-ref/networking/v2/index.html#networks)
+                              properties:
+                                admin_state_up:
+                                  type: boolean
+                                description:
+                                  type: string
+                                name:
+                                  type: string
+                                port_security_enabled:
+                                  type: boolean
+                                provider_network_type:
+                                  type: string
+                                provider_physical_network:
+                                  type: string
+                                provider_segmentation_id:
+                                  type: string
+                                qos_policy_id:
+                                  type: string
+                                router_external:
+                                  type: boolean
+                                shared:
+                                  type: boolean
+                                subnets:
+                                  items:
+                                    description: A neutron subnet (see https://developer.openstack.org/api-ref/networking/v2/index.html#subnets)
+                                    properties:
+                                      allocation_pools:
+                                        items:
+                                          type: string
+                                        type: array
+                                      cidr:
+                                        type: string
+                                      description:
+                                        type: string
+                                      dns_name_servers:
+                                        items:
+                                          type: string
+                                        type: array
+                                      enable_dhcp:
+                                        type: boolean
+                                      gateway_ip:
+                                        type: string
+                                      host_routes:
+                                        items:
+                                          type: string
+                                        type: array
+                                      ip_version:
+                                        type: integer
+                                      ipv6_address_mode:
+                                        type: string
+                                      ipv6_ra_mode:
+                                        type: string
+                                      name:
+                                        type: string
+                                      prefixlen:
+                                        type: integer
+                                      segment_id:
+                                        type: string
+                                      subnetpool:
+                                        type: string
+                                      subnetpool_id:
+                                        type: string
+                                      tags:
+                                        items:
+                                          type: string
+                                        type: array
+                                    required:
+                                    - name
+                                    type: object
+                                  type: array
+                                tags:
+                                  items:
+                                    type: string
+                                  type: array
+                                vlan_transparent:
+                                  type: boolean
+                              required:
+                              - name
+                              type: object
+                            type: array
+                          parent:
+                            type: string
+                          role_assignments:
+                            items:
+                              description: "A keystone role assignment (see https://developer.openstack.org/api-ref/identity/v3/#roles).
+                                \n Role assignments can be assigned to users, groups,
+                                domain and projects. \n A role assignment always links
+                                3 entities: user or group to project or domain with
+                                a specified role. \n To support cross domain entity
+                                referals, the user-, group- or project-names support
+                                a name@domain notation."
+                              properties:
+                                domain:
+                                  type: string
+                                group:
+                                  type: string
+                                inherited:
+                                  type: boolean
+                                project:
+                                  type: string
+                                project_id:
+                                  type: string
+                                role:
+                                  type: string
+                                system:
+                                  type: string
+                                user:
+                                  type: string
+                              required:
+                              - role
+                              type: object
+                            type: array
+                          routers:
+                            items:
+                              description: A neutron router (see https://developer.openstack.org/api-ref/networking/v2/index.html#routers)
+                              properties:
+                                admin_state_up:
+                                  type: boolean
+                                description:
+                                  type: string
+                                distributed:
+                                  type: boolean
+                                external_gateway_info:
+                                  properties:
+                                    enable_snat:
+                                      type: boolean
+                                    external_fixed_ips:
+                                      items:
+                                        properties:
+                                          ip_address:
+                                            type: string
+                                          subnet:
+                                            type: string
+                                          subnet_id:
+                                            type: string
+                                        type: object
+                                      type: array
+                                    network:
+                                      type: string
+                                    network_id:
+                                      type: string
+                                  type: object
+                                flavor_id:
+                                  type: string
+                                ha:
+                                  type: boolean
+                                interfaces:
+                                  items:
+                                    properties:
+                                      port_id:
+                                        type: string
+                                      subnet:
+                                        type: string
+                                      subnet_id:
+                                        type: string
+                                    type: object
+                                  type: array
+                                name:
+                                  type: string
+                                routes:
+                                  items:
+                                    properties:
+                                      destination:
+                                        type: string
+                                      nexthop:
+                                        type: string
+                                    type: object
+                                  type: array
+                                service_type_id:
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            type: array
+                          share_types:
+                            items:
+                              type: string
+                            type: array
+                          subnet_pools:
+                            items:
+                              description: A neutron subnet pool (see https://developer.openstack.org/api-ref/networking/v2/index.html#subnet-pools)
+                              properties:
+                                address_scope_id:
+                                  type: string
+                                default_prefixlen:
+                                  type: integer
+                                default_quota:
+                                  type: integer
+                                description:
+                                  type: string
+                                is_default:
+                                  type: boolean
+                                max_prefixlen:
+                                  type: integer
+                                min_prefixlen:
+                                  type: integer
+                                name:
+                                  type: string
+                                prefixes:
+                                  items:
+                                    type: string
+                                  type: array
+                                shared:
+                                  type: boolean
+                              required:
+                              - name
+                              - prefixes
+                              type: object
+                            type: array
+                          swift:
+                            description: SwiftAccountSpec defines a swift account
+                            properties:
+                              containers:
+                                items:
+                                  description: SwiftContainerSpec defines a swift
+                                    container
+                                  properties:
+                                    metadata:
+                                      additionalProperties:
+                                        type: string
+                                      type: object
+                                    name:
+                                      type: string
+                                  required:
+                                  - name
+                                  type: object
+                                type: array
+                              enabled:
+                                type: boolean
+                            type: object
+                        required:
+                        - name
+                        type: object
+                      type: array
+                    role_assignments:
+                      items:
+                        description: "A keystone role assignment (see https://developer.openstack.org/api-ref/identity/v3/#roles).
+                          \n Role assignments can be assigned to users, groups, domain
+                          and projects. \n A role assignment always links 3 entities:
+                          user or group to project or domain with a specified role.
+                          \n To support cross domain entity referals, the user-, group-
+                          or project-names support a name@domain notation."
+                        properties:
+                          domain:
+                            type: string
+                          group:
+                            type: string
+                          inherited:
+                            type: boolean
+                          project:
+                            type: string
+                          project_id:
+                            type: string
+                          role:
+                            type: string
+                          system:
+                            type: string
+                          user:
+                            type: string
+                        required:
+                        - role
+                        type: object
+                      type: array
+                    roles:
+                      items:
+                        description: A keystone role (see https://developer.openstack.org/api-ref/identity/v3/index.html#roles)
+                        properties:
+                          description:
+                            type: string
+                          name:
+                            type: string
+                        required:
+                        - name
+                        type: object
+                      type: array
+                    users:
+                      items:
+                        description: A keystone user (see https://developer.openstack.org/api-ref/identity/v3/#users)
+                        properties:
+                          default_project:
+                            type: string
+                          description:
+                            type: string
+                          enabled:
+                            type: boolean
+                          name:
+                            type: string
+                          password:
+                            type: string
+                          role_assignments:
+                            items:
+                              description: "A keystone role assignment (see https://developer.openstack.org/api-ref/identity/v3/#roles).
+                                \n Role assignments can be assigned to users, groups,
+                                domain and projects. \n A role assignment always links
+                                3 entities: user or group to project or domain with
+                                a specified role. \n To support cross domain entity
+                                referals, the user-, group- or project-names support
+                                a name@domain notation."
+                              properties:
+                                domain:
+                                  type: string
+                                group:
+                                  type: string
+                                inherited:
+                                  type: boolean
+                                project:
+                                  type: string
+                                project_id:
+                                  type: string
+                                role:
+                                  type: string
+                                system:
+                                  type: string
+                                user:
+                                  type: string
+                              required:
+                              - role
+                              type: object
+                            type: array
+                        required:
+                        - name
+                        type: object
+                      type: array
+                  required:
+                  - name
+                  type: object
+                type: array
+              flavors:
+                description: list of nova flavors
+                items:
+                  description: A nova flavor (see https://developer.openstack.org/api-ref/compute/#flavors)
+                  properties:
+                    disabled:
+                      type: boolean
+                    disk:
+                      type: integer
+                    ephemeral:
+                      type: integer
+                    extra_specs:
+                      additionalProperties:
+                        type: string
+                      type: object
+                    id:
+                      type: string
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                    ram:
+                      type: integer
+                    rxtxfactor:
+                      type: integer
+                    swap:
+                      type: integer
+                    vcpus:
+                      type: integer
+                  required:
+                  - name
+                  type: object
+                type: array
+              rbac_policies:
+                description: list of neutron rbac polices (currently only network
+                  rbacs are supported)
+                items:
+                  description: A neutron RBAC policy (see https://developer.openstack.org/api-ref/network/v2/index.html#rbac-policies)
+                  properties:
+                    action:
+                      type: string
+                    object_name:
+                      type: string
+                    object_type:
+                      type: string
+                    target_tenant_name:
+                      type: string
+                  required:
+                  - action
+                  - object_name
+                  - object_type
+                  - target_tenant_name
+                  type: object
+                type: array
+              regions:
+                description: list keystone regions
+                items:
+                  description: A keystone region (see https://developer.openstack.org/api-ref/identity/v3/index.html#regions)
+                  properties:
+                    description:
+                      type: string
+                    id:
+                      type: string
+                    parent_region:
+                      type: string
+                  required:
+                  - id
+                  type: object
+                type: array
+              requires:
+                description: Foo is an example field of OpenstackSeed. Edit openstackseed_types.go
+                  to remove/update list of required specs that need to be resolved
+                  before the current one
+                items:
+                  type: string
+                type: array
+              resource_classes:
+                description: list of resource classes for the placement service (currently
+                  still part of nova)
+                items:
+                  type: string
+                type: array
+              role_inferences:
+                description: list of implied roles
+                items:
+                  description: A keystone role inference (see https://developer.openstack.org/api-ref/identity/v3/index.html#roles)
+                  properties:
+                    implied_role:
+                      type: string
+                    prior_role:
+                      type: string
+                  required:
+                  - implied_role
+                  - prior_role
+                  type: object
+                type: array
+              roles:
+                description: list of keystone roles
+                items:
+                  description: A keystone role (see https://developer.openstack.org/api-ref/identity/v3/index.html#roles)
+                  properties:
+                    description:
+                      type: string
+                    name:
+                      type: string
+                  required:
+                  - name
+                  type: object
+                type: array
+              services:
+                description: list keystone services and their endpoints
+                items:
+                  description: A keystone service (see https://developer.openstack.org/api-ref/identity/v3/index.html#service-catalog-and-endpoints)
+                  properties:
+                    description:
+                      type: string
+                    enabled:
+                      type: boolean
+                    endpoints:
+                      items:
+                        description: A keystone service endpoint (see https://developer.openstack.org/api-ref/identity/v3/index.html#service-catalog-and-endpoints)
+                        properties:
+                          enabled:
+                            type: boolean
+                          interface:
+                            type: string
+                          region:
+                            type: string
+                          url:
+                            type: string
+                        required:
+                        - interface
+                        - region
+                        - url
+                        type: object
+                      type: array
+                    name:
+                      type: string
+                    type:
+                      type: string
+                  required:
+                  - name
+                  - type
+                  type: object
+                type: array
+              share_types:
+                description: list of Manila share types
+                items:
+                  description: A Manila Share Type (see https://developer.openstack.org/api-ref/shared-file-system/?expanded=create-share-type-detail#share-types
+                    )
+                  properties:
+                    description:
+                      type: string
+                    extra_specs:
+                      additionalProperties:
+                        type: string
+                      type: object
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                    specs:
+                      properties:
+                        driver_handles_share_servers:
+                          type: boolean
+                        snapshot_support:
+                          type: boolean
+                      required:
+                      - driver_handles_share_servers
+                      type: object
+                  required:
+                  - name
+                  - specs
+                  type: object
+                type: array
+              volume_types:
+                description: list of cinder volume types
+                items:
+                  description: A Cinder Volume Type
+                  properties:
+                    description:
+                      type: string
+                    extra_specs:
+                      additionalProperties:
+                        type: string
+                      type: object
+                    is_public:
+                      type: boolean
+                    name:
+                      type: string
+                  required:
+                  - name
+                  type: object
+                type: array
+            type: object
+          status:
+            description: OpenstackSeedStatus defines the observed state of OpenstackSeed
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

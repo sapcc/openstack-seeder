@@ -1,0 +1,24 @@
+# permissions for end users to edit openstackseeds.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: openstackseed-editor-role
+rules:
+- apiGroups:
+  - openstack.stable.sap.cc
+  resources:
+  - openstackseeds
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - openstack.stable.sap.cc
+  resources:
+  - openstackseeds/status
+  verbs:
+  - get
