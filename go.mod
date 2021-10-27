@@ -6,6 +6,7 @@ require (
 	github.com/gophercloud/gophercloud v0.22.0
 	github.com/onsi/ginkgo v1.14.1
 	github.com/onsi/gomega v1.10.2
+	github.com/prometheus/client_golang v1.7.1
 	github.com/stretchr/testify v1.6.1
 	k8s.io/apimachinery v0.20.2
 	k8s.io/client-go v0.20.2

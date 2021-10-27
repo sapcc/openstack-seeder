@@ -25,9 +25,11 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	"sigs.k8s.io/controller-runtime/pkg/controller"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	openstackstablesapccv2 "github.com/sapcc/openstack-seeder/api/v2"
+	"github.com/sapcc/openstack-seeder/config/options"
 	"github.com/sapcc/openstack-seeder/openstack"
 )
 
@@ -62,8 +64,10 @@ func (r *OpenstackSeedReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 	}
 	r.reconcileSeeds(seed)
 	if len(seed.Status.UnfinishedSeeds) > 0 {
+		seedStatus.WithLabelValues(seed.Name).Set(0)
 		return ctrl.Result{RequeueAfter: 10 * time.Minute}, nil
 	}
+	seedStatus.WithLabelValues(seed.Name).Set(1)
 	return ctrl.Result{RequeueAfter: 24 * time.Hour}, nil
 }
 
@@ -97,9 +101,10 @@ func (r *OpenstackSeedReconciler) reconcileSeeds(seed openstackstablesapccv2.Ope
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *OpenstackSeedReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *OpenstackSeedReconciler) SetupWithManager(mgr ctrl.Manager, opts options.Options) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&openstackstablesapccv2.OpenstackSeed{}).
+		WithOptions(controller.Options{MaxConcurrentReconciles: opts.MaxConcurrentReconciles}).
 		Complete(r)
 }
 
