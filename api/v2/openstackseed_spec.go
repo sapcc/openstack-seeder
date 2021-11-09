@@ -58,10 +58,12 @@ type ExtraServiceSpec struct {
 
 // A keystone service endpoint (see https://developer.openstack.org/api-ref/identity/v3/index.html#service-catalog-and-endpoints)
 type EndpointSpec struct {
-	Region    string `json:"region" yaml:"region"`       // region-id
+	Region string `json:"region" yaml:"region"` // region-id
+	// +kubebuilder:validation:Required
 	Interface string `json:"interface" yaml:"interface"` // interface type (usually public, admin, internal)
-	URL       string `json:"url" yaml:"url"`             // the endpoints URL
-	Enabled   bool   `json:"enabled" yaml:"enabled"`     // boolean flag to indicate if the endpoint is enabled
+	// +kubebuilder:validation:Required
+	URL     string `json:"url" yaml:"url"`         // the endpoints URL
+	Enabled bool   `json:"enabled" yaml:"enabled"` // boolean flag to indicate if the endpoint is enabled
 }
 
 // A keystone domain (see https://developer.openstack.org/api-ref/identity/v3/index.html#domains)
@@ -194,6 +196,7 @@ type RoleAssignmentSpec struct {
 
 // A keystone user (see https://developer.openstack.org/api-ref/identity/v3/#users)
 type UserSpec struct {
+	// +kubebuilder:validation:Required
 	Name             string               `json:"name" yaml:"name"`                                             // username
 	Description      string               `json:"description,omitempty" yaml:"description,omitempty"`           // description of the user
 	Password         string               `json:"password,omitempty" yaml:"password,omitempty"`                 // password of the user (only evaluated on user creation)

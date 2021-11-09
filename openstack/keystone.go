@@ -19,16 +19,19 @@ package openstack
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gophercloud/gophercloud"
 	"github.com/gophercloud/gophercloud/openstack"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/domains"
-	"github.com/gophercloud/gophercloud/openstack/identity/v3/projects"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/endpoints"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/regions"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/roles"
 	"github.com/gophercloud/gophercloud/openstack/identity/v3/services"
+	"github.com/gophercloud/gophercloud/openstack/identity/v3/users"
 
 	openstackstablesapccv2 "github.com/sapcc/openstack-seeder/api/v2"
 	"github.com/sapcc/openstack-seeder/pkg/cache"
@@ -84,8 +87,7 @@ func (k *Keystone) SeedRole(spec openstackstablesapccv2.RoleSpec) (updated *role
 		}
 		json.Unmarshal(b, &opts)
 		opts.Extra = specRole.Extra
-		updated, err = roles.Create(k.Client, opts).Extract()
-		return updated, err
+		return roles.Create(k.Client, opts).Extract()
 	}
 	role := rs[0]
 	if !isEqual(specRole, role) {
@@ -93,7 +95,7 @@ func (k *Keystone) SeedRole(spec openstackstablesapccv2.RoleSpec) (updated *role
 		d, _ := json.Marshal(specRole)
 		json.Unmarshal(d, &update)
 		update.Extra = specRole.Extra
-		updated, err = roles.Update(k.Client, role.ID, update).Extract()
+		return roles.Update(k.Client, role.ID, update).Extract()
 	}
 	return
 }
@@ -119,14 +121,13 @@ func (k *Keystone) SeedRegion(spec openstackstablesapccv2.RegionSpec) (updated *
 		}
 		json.Unmarshal(b, &opts)
 		opts.Extra = specRegion.Extra
-		updated, err = regions.Create(k.Client, opts).Extract()
-		return updated, err
+		return regions.Create(k.Client, opts).Extract()
 	}
 	if !isEqual(specRegion, region) {
 		opts := regions.UpdateOpts{}
 		b, _ := json.Marshal(specRegion)
 		json.Unmarshal(b, &opts)
-		updated, err = regions.Update(k.Client, region.ID, opts).Extract()
+		return regions.Update(k.Client, region.ID, opts).Extract()
 	}
 	return
 }
@@ -141,8 +142,7 @@ func (k *Keystone) SeedService(spec openstackstablesapccv2.ServiceSpec) (updated
 		opts := services.CreateOpts{}
 		b, _ := json.Marshal(spec)
 		json.Unmarshal(b, &opts)
-		updated, err = services.Create(k.Client, opts).Extract()
-		return
+		return services.Create(k.Client, opts).Extract()
 	}
 	svc := svcs[0]
 	d, _ := json.Marshal(spec)
@@ -153,8 +153,7 @@ func (k *Keystone) SeedService(spec openstackstablesapccv2.ServiceSpec) (updated
 		b, _ := json.Marshal(specService)
 		json.Unmarshal(b, &opts)
 		opts.Extra = specService.Extra
-		updated, err = services.Update(k.Client, svc.ID, opts).Extract()
-		return
+		return services.Update(k.Client, svc.ID, opts).Extract()
 	}
 	return
 }
@@ -175,7 +174,7 @@ func (k *Keystone) SeedDomain(spec openstackstablesapccv2.DomainSpec) (updated *
 			return updated, err
 		}
 		json.Unmarshal(b, &opts)
-		domains.Create(k.Client, opts)
+		return domains.Create(k.Client, opts).Extract()
 	}
 	domain := ds[0]
 	d, _ := json.Marshal(spec)
@@ -184,52 +183,114 @@ func (k *Keystone) SeedDomain(spec openstackstablesapccv2.DomainSpec) (updated *
 	if !isEqual(specDomain, domain) {
 		upd := domains.UpdateOpts{}
 		json.Unmarshal(d, &upd)
-		updated, err = domains.Update(k.Client, domain.ID, upd).Extract()
+		return domains.Update(k.Client, domain.ID, upd).Extract()
 	}
 	return
 }
 
-func (k *Keystone) GetProjectID(domain, name string) (id string, err error) {
-	if id, ok := k.cache.Get("project", fmt.Sprintf("%s.%s", domain, name)); ok {
-		return id, nil
-	}
-	domainID, err := k.GetDomainID(domain)
+func (k *Keystone) SeedEndpoints(spec openstackstablesapccv2.EndpointSpec, serviceID string) (updated *endpoints.Endpoint, err error) {
+	_, err = url.Parse(spec.URL)
 	if err != nil {
 		return
 	}
-	p, err := projects.List(k.Client, projects.ListOpts{
-		Name:     name,
-		DomainID: domainID,
+
+	p, err := endpoints.List(k.Client, endpoints.ListOpts{
+		ServiceID: serviceID,
+		RegionID:  spec.Region,
 	}).AllPages()
 	if err != nil {
 		return
 	}
-	r, err := projects.ExtractProjects(p)
+	e, err := endpoints.ExtractEndpoints(p)
 	if err != nil {
 		return
 	}
-	if len(r) != 1 {
-		return id, fmt.Errorf("could not find project: %s", name)
+	if len(e) == 0 {
+		opts := endpoints.CreateOpts{}
+		b, err := json.Marshal(spec)
+		if err != nil {
+			return updated, err
+		}
+		json.Unmarshal(b, &opts)
+		return endpoints.Create(k.Client, opts).Extract()
 	}
-	k.cache.Add("project", r[0].ID, name, 0)
-	return r[0].ID, err
+	endpoint := e[0]
+	d, _ := json.Marshal(spec)
+	specEndpoint := endpoints.Endpoint{}
+	json.Unmarshal(d, &specEndpoint)
+	if !isEqual(specEndpoint, endpoint) {
+		upd := endpoints.UpdateOpts{}
+		json.Unmarshal(d, &upd)
+		return endpoints.Update(k.Client, endpoint.ID, upd).Extract()
+	}
+	return
 }
 
-func (k *Keystone) GetDomainID(name string) (id string, err error) {
-	if id, ok := k.cache.Get("domain", name); ok {
-		return id, nil
-	}
-	p, err := domains.List(k.Client, domains.ListOpts{Name: name}).AllPages()
+func (k *Keystone) SeedUser(spec openstackstablesapccv2.UserSpec) (updated *users.User, err error) {
+	p, err := users.List(k.Client, users.ListOpts{
+		DomainID: "",
+		Name:     spec.Name,
+	}).AllPages()
 	if err != nil {
 		return
 	}
-	d, err := domains.ExtractDomains(p)
+	u, err := users.ExtractUsers(p)
 	if err != nil {
 		return
 	}
-	if len(d) != 1 {
-		return id, fmt.Errorf("could not find domain: %s", name)
+	if len(u) == 0 {
+		opts := users.CreateOpts{}
+		b, err := json.Marshal(spec)
+		if err != nil {
+			return updated, err
+		}
+		json.Unmarshal(b, &opts)
+		return users.Create(k.Client, opts).Extract()
 	}
-	k.cache.Add("domain", d[0].ID, name, 0)
-	return d[0].ID, err
+	user := u[0]
+	d, _ := json.Marshal(spec)
+	specUser := users.User{}
+	specUser.UnmarshalJSON(d)
+	if !isEqual(specUser, user) {
+		opts := users.UpdateOpts{}
+		b, _ := json.Marshal(specUser)
+		json.Unmarshal(b, &opts)
+		opts.Extra = specUser.Extra
+		return users.Update(k.Client, user.ID, opts).Extract()
+	}
+	return
+}
+
+func (k *Keystone) SeedRoleAssignment(spec openstackstablesapccv2.RoleAssignmentSpec) (err error) {
+	assignOpts := roles.AssignOpts{}
+	if spec.User != "" {
+		r := strings.Split(spec.User, "@")
+		if len(r) != 2 {
+			return fmt.Errorf("user name wrong format: domain@name")
+		}
+		assignOpts.UserID, err = k.GetUserID(r[0], r[1])
+		if err != nil {
+			return
+		}
+	}
+	roleID, err := k.GetRoleID(spec.Role)
+	if err != nil {
+		return
+	}
+	if spec.ProjectID != "" {
+		assignOpts.ProjectID = spec.ProjectID
+	} else {
+		r := strings.Split(spec.Project, "@")
+		assignOpts.ProjectID, err = k.GetProjectID(r[0], r[1])
+		if err != nil {
+			return
+		}
+	}
+	if spec.Domain != "" {
+		assignOpts.DomainID, err = k.GetDomainID(spec.Domain)
+		if err != nil {
+			return
+		}
+	}
+	return roles.Assign(k.Client, roleID, assignOpts).ExtractErr()
 }

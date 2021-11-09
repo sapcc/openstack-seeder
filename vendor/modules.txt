@@ -62,13 +62,16 @@ github.com/gophercloud/gophercloud/openstack
 github.com/gophercloud/gophercloud/openstack/identity/v2/tenants
 github.com/gophercloud/gophercloud/openstack/identity/v2/tokens
 github.com/gophercloud/gophercloud/openstack/identity/v3/domains
+github.com/gophercloud/gophercloud/openstack/identity/v3/endpoints
 github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/ec2tokens
 github.com/gophercloud/gophercloud/openstack/identity/v3/extensions/oauth1
+github.com/gophercloud/gophercloud/openstack/identity/v3/groups
 github.com/gophercloud/gophercloud/openstack/identity/v3/projects
 github.com/gophercloud/gophercloud/openstack/identity/v3/regions
 github.com/gophercloud/gophercloud/openstack/identity/v3/roles
 github.com/gophercloud/gophercloud/openstack/identity/v3/services
 github.com/gophercloud/gophercloud/openstack/identity/v3/tokens
+github.com/gophercloud/gophercloud/openstack/identity/v3/users
 github.com/gophercloud/gophercloud/openstack/utils
 github.com/gophercloud/gophercloud/pagination
 github.com/gophercloud/gophercloud/testhelper
