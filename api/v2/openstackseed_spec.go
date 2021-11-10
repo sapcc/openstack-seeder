@@ -43,11 +43,12 @@ type RegionSpec struct {
 
 // A keystone service (see https://developer.openstack.org/api-ref/identity/v3/index.html#service-catalog-and-endpoints)
 type ServiceSpec struct {
-	ID          string `json:"id"`
-	Type        string `json:"type" yaml:"type"`                                   // service type
-	Enabled     bool   `json:"enabled" yaml:"enabled"`                             // boolean flag to indicate if the service is enabled
-	Name        string `json:"name" yaml:"name"`                                   // service name
-	Description string `json:"description,omitempty" yaml:"description,omitempty"` // description of the service
+	ID          string         `json:"id"`
+	Type        string         `json:"type" yaml:"type"`                                   // service type
+	Enabled     bool           `json:"enabled" yaml:"enabled"`                             // boolean flag to indicate if the service is enabled
+	Name        string         `json:"name" yaml:"name"`                                   // service name
+	Description string         `json:"description,omitempty" yaml:"description,omitempty"` // description of the service
+	Endpoints   []EndpointSpec `json:"endpoints,omitempty" yaml:"endpoints,omitempty"`
 }
 
 type ExtraServiceSpec struct {

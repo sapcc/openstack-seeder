@@ -206,6 +206,8 @@ spec:
                         - name
                         type: object
                       type: array
+                    id:
+                      type: string
                     name:
                       type: string
                     projects:
@@ -681,9 +683,15 @@ spec:
                         properties:
                           description:
                             type: string
+                          domain_id:
+                            type: string
+                          id:
+                            type: string
                           name:
                             type: string
                         required:
+                        - domain_id
+                        - id
                         - name
                         type: object
                       type: array
@@ -736,6 +744,7 @@ spec:
                         type: object
                       type: array
                   required:
+                  - id
                   - name
                   type: object
                 type: array
@@ -802,10 +811,11 @@ spec:
                       type: string
                     id:
                       type: string
-                    parent_region:
+                    parent_region_id:
                       type: string
                   required:
                   - id
+                  - parent_region_id
                   type: object
                 type: array
               requires:
@@ -842,9 +852,15 @@ spec:
                   properties:
                     description:
                       type: string
+                    domain_id:
+                      type: string
+                    id:
+                      type: string
                     name:
                       type: string
                   required:
+                  - domain_id
+                  - id
                   - name
                   type: object
                 type: array
@@ -870,16 +886,21 @@ spec:
                           url:
                             type: string
                         required:
+                        - enabled
                         - interface
                         - region
                         - url
                         type: object
                       type: array
+                    id:
+                      type: string
                     name:
                       type: string
                     type:
                       type: string
                   required:
+                  - enabled
+                  - id
                   - name
                   - type
                   type: object
@@ -936,6 +957,14 @@ spec:
             type: object
           status:
             description: OpenstackSeedStatus defines the observed state of OpenstackSeed
+            properties:
+              unfinished_seeds:
+                additionalProperties:
+                  type: string
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                type: object
             type: object
         type: object
     served: true

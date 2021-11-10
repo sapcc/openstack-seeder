@@ -57,7 +57,8 @@ type OpenstackSeedSpec struct {
 type OpenstackSeedStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
-	UnfinishedSeeds map[string]string
+	UnfinishedSeeds           map[string]string `json:"unfinished_seeds,omitempty" yaml:"unfinished_seeds,omitempty"`
+	ReconciledResourceVersion string            `json:"reconciled_resource_version,omitempty" yaml:"reconciled_resource_version,omitempty"`
 }
 
 //+kubebuilder:object:root=true

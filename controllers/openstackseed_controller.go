@@ -20,9 +20,11 @@ import (
 	"context"
 	"fmt"
 	"reflect"
+	"strings"
 	"time"
 
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
@@ -62,11 +64,17 @@ func (r *OpenstackSeedReconciler) Reconcile(ctx context.Context, req ctrl.Reques
 		// on deleted requests.
 		return ctrl.Result{}, client.IgnoreNotFound(err)
 	}
+	if err := r.resolveDependencies(ctx, seed); err != nil {
+		l.Info(err.Error() + " => requeuing after 1min")
+		// One of the dependeny seeds has not been reconciled since it changed. So we wait...
+		return ctrl.Result{RequeueAfter: 1 * time.Minute}, nil
+	}
 	r.reconcileSeeds(seed)
 	if len(seed.Status.UnfinishedSeeds) > 0 {
 		seedStatus.WithLabelValues(seed.Name).Set(0)
 		return ctrl.Result{RequeueAfter: 10 * time.Minute}, nil
 	}
+	seed.Status.ReconciledResourceVersion = seed.ResourceVersion
 	seedStatus.WithLabelValues(seed.Name).Set(1)
 	return ctrl.Result{RequeueAfter: 24 * time.Hour}, nil
 }
@@ -106,6 +114,28 @@ func (r *OpenstackSeedReconciler) SetupWithManager(mgr ctrl.Manager, opts option
 		For(&openstackstablesapccv2.OpenstackSeed{}).
 		WithOptions(controller.Options{MaxConcurrentReconciles: opts.MaxConcurrentReconciles}).
 		Complete(r)
+}
+
+// resolveDependencies checks whether all dependencies have been reconciled already. If not, we will check back later!
+// so at one point all depencies will eventually be reconciled
+func (r *OpenstackSeedReconciler) resolveDependencies(ctx context.Context, seed openstackstablesapccv2.OpenstackSeed) error {
+	for _, d := range seed.Spec.Dependencies {
+		var dependency openstackstablesapccv2.OpenstackSeed
+		n := strings.Split(d, "/")
+		if len(n) != 2 {
+			return fmt.Errorf("wrong dependency name syntax: (%s) => namespace/name", d)
+		}
+		if err := r.Get(ctx, types.NamespacedName{Namespace: n[0], Name: n[1]}, &dependency); err != nil {
+			return fmt.Errorf("cannot find dependency: %s", d)
+		}
+		//resourceVersion: a string that identifies the internal version of this object that can be used by clients to determine when objects have changed.
+		// This value MUST be treated as opaque by clients and passed unmodified back to the server.
+		// we check if the dependency seed has been reconciled yet!
+		if dependency.ResourceVersion != seed.Status.ReconciledResourceVersion {
+			return fmt.Errorf("dependency: %s not yet reconciled", d)
+		}
+	}
+	return nil
 }
 
 func (r *OpenstackSeedReconciler) reconcileSeed(name string, seed openstackstablesapccv2.OpenstackSeed) (err error) {
